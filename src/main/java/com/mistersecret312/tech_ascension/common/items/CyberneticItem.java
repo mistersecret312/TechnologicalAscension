@@ -10,12 +10,17 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CyberneticItem extends QualityItem
 {
@@ -32,6 +37,14 @@ public class CyberneticItem extends QualityItem
         item.setCybernetics(stack, cybernetics);
 
         return stack;
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context)
+    {
+        if(!context.getLevel().isClientSide())
+            context.getLevel().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).entrySet().forEach(thing -> System.out.println(thing.getKey().location().toString()));
+        return super.useOn(context);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.mistersecret312.tech_ascension.common.util.Quality;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -85,7 +86,7 @@ public class AttributeAbility implements AbilityType
                     desc = Component.literal("+" + value + " ");
                 if(value < 0)
                     desc = Component.literal("-" + value + " ");
-                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath()));
+                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
 
             }
             else
@@ -98,11 +99,11 @@ public class AttributeAbility implements AbilityType
                     desc = Component.literal("+" + (value-1)*100 + "% ");
                 if(value > 0 && value < 1)
                     desc = Component.literal("-" + (1-value)*100 + "% ");
-                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath()));
+                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
             }
         }
 
-        return Component.translatable("description.cybernetics.error");
+        return Component.translatable("description.cybernetics.error").withStyle(ChatFormatting.DARK_RED);
     }
 
     public enum Operation implements StringRepresentable

@@ -28,7 +28,6 @@ public class TechAscensionMod
     {
         IEventBus modEventBus = context.getModEventBus();
 
-        MinecraftForge.EVENT_BUS.register(this);
 
         ItemInit.register(modEventBus);
         ItemTabInit.register(modEventBus);
@@ -39,6 +38,8 @@ public class TechAscensionMod
         {
             event.dataPackRegistry(Cybernetics.REGISTRY_KEY, Cybernetics.CODEC, Cybernetics.CODEC);
         });
+
+        MinecraftForge.EVENT_BUS.register(this);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
     }
