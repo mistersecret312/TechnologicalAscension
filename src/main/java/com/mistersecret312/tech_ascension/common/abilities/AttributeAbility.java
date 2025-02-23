@@ -11,13 +11,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class AttributeAbility implements AbilityType
 {
@@ -63,6 +67,55 @@ public class AttributeAbility implements AbilityType
     public Codec<? extends AbilityType> getType()
     {
         return AbilityInit.ATTRIBUTE.get();
+    }
+
+    @Override
+    public void onAdded(LivingEntity entity, Quality quality)
+    {
+        Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
+        Double value = null;
+
+        if(this.values.left().isPresent())
+            value = values.left().get();
+
+        if(this.values.right().isPresent())
+            value = values.right().get().get(quality.ordinal());
+
+
+        if(attributeTarget != null && value != null)
+        {
+            String name = "cybernetic.modifier." + attribute.location().getPath() + "." + operation.id;
+            UUID uuid = UUID.fromString(name);
+            AttributeModifier modifier = new AttributeModifier(uuid, name, value, operation.toModifier());
+            AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
+
+            if(instance != null)
+            {
+                AttributeModifier old = instance.getModifier(uuid);
+                if(old != null)
+                {
+                    double oldAmount = old.getAmount();
+                    AttributeModifier newModifier = new AttributeModifier(uuid, name, value+oldAmount, operation.toModifier());
+
+                    instance.addPermanentModifier(newModifier);
+                }
+                else instance.addPermanentModifier(modifier);
+            }
+
+        }
+    }
+
+    @Override
+    public void onRemoved(LivingEntity entity, Quality quality)
+    {
+        Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
+        if(attributeTarget != null)
+        {
+            String name = "cybernetic.modifier." + attribute.location().getPath() + "." + operation.id;
+            AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
+            if(instance != null)
+                instance.removePermanentModifier(UUID.fromString(name));
+        }
     }
 
     @Override

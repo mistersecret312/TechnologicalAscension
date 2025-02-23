@@ -40,14 +40,6 @@ public class CyberneticItem extends QualityItem
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context)
-    {
-        if(!context.getLevel().isClientSide())
-            context.getLevel().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).entrySet().forEach(thing -> System.out.println(thing.getKey().location().toString()));
-        return super.useOn(context);
-    }
-
-    @Override
     public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents,
                                 TooltipFlag pIsAdvanced)
     {
