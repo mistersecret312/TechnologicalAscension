@@ -1,6 +1,7 @@
 package com.mistersecret312.tech_ascension.common.abilities;
 
 import com.mistersecret312.tech_ascension.common.init.AbilityInit;
+import com.mistersecret312.tech_ascension.common.items.CyberneticItem;
 import com.mistersecret312.tech_ascension.common.util.Quality;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -17,8 +18,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -70,8 +74,11 @@ public class AttributeAbility implements AbilityType
     }
 
     @Override
-    public void onAdded(LivingEntity entity, Quality quality)
+    public void onAdded(LivingEntity entity, ItemStack stack)
     {
+        Quality quality = ((CyberneticItem) stack.getItem()).getQuality(stack);
+        UUID uuid = ((CyberneticItem) stack.getItem()).getUUID(stack);
+
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         Double value = null;
 
@@ -84,43 +91,33 @@ public class AttributeAbility implements AbilityType
 
         if(attributeTarget != null && value != null)
         {
-            String name = "cybernetic.modifier." + attribute.location().getPath() + "." + operation.id;
-            UUID uuid = UUID.fromString(name);
-            AttributeModifier modifier = new AttributeModifier(uuid, name, value, operation.toModifier());
+            AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), value, operation.toModifier());
             AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
 
             if(instance != null)
-            {
-                AttributeModifier old = instance.getModifier(uuid);
-                if(old != null)
-                {
-                    double oldAmount = old.getAmount();
-                    AttributeModifier newModifier = new AttributeModifier(uuid, name, value+oldAmount, operation.toModifier());
-
-                    instance.addPermanentModifier(newModifier);
-                }
-                else instance.addPermanentModifier(modifier);
-            }
+                instance.addPermanentModifier(modifier);
 
         }
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, Quality quality)
+    public void onRemoved(LivingEntity entity, ItemStack stack)
     {
+        UUID uuid = ((CyberneticItem) stack.getItem()).getUUID(stack);
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         if(attributeTarget != null)
         {
-            String name = "cybernetic.modifier." + attribute.location().getPath() + "." + operation.id;
             AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
             if(instance != null)
-                instance.removePermanentModifier(UUID.fromString(name));
+                instance.removePermanentModifier(uuid);
         }
     }
 
     @Override
-    public MutableComponent getDescription(Quality quality)
+    public MutableComponent getDescription(ItemStack stack)
     {
+        Quality quality = ((CyberneticItem) stack.getItem()).getQuality(stack);
+
         Optional<Double> baseValue = getValues().left();
         Optional<List<Double>> qualityValues = getValues().right();
 
@@ -132,27 +129,49 @@ public class AttributeAbility implements AbilityType
 
         if(value != null)
         {
+            NumberFormat fraction = NumberFormat.getNumberInstance();
+            fraction.setParseIntegerOnly(false);
+            fraction.setMaximumFractionDigits(1);
+            fraction.setMinimumFractionDigits(0);
+
             if(this.getOperation().equals(Operation.ADDITION))
             {
-                MutableComponent desc = Component.empty();
+                String displayValue = fraction.format(value);
                 if(value > 0)
-                    desc = Component.literal("+" + value + " ");
+                {
+                    MutableComponent desc = Component.literal("+" + displayValue + " ");
+                    return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
+                }
                 if(value < 0)
-                    desc = Component.literal("-" + value + " ");
-                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
+                {
+                    MutableComponent desc = Component.literal("-" + displayValue + " ");
+                    return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.RED);
+                }
 
             }
             else
             {
-                MutableComponent desc = Component.empty();
                 if(value < 0)
                     value = 1.0;
 
-                if(value > 1)
-                    desc = Component.literal("+" + (value-1)*100 + "% ");
-                if(value > 0 && value < 1)
-                    desc = Component.literal("-" + (1-value)*100 + "% ");
-                return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
+                value *= 100;
+
+                if(value > 100)
+                {
+                    value -= 100;
+                    String displayValue = fraction.format(value);
+
+                    MutableComponent desc = Component.literal("+" + displayValue + "% ");
+                    return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.AQUA);
+                }
+                if(value > 0 && value < 100)
+                {
+                    String displayValue = fraction.format((100-value));
+
+                    MutableComponent desc = Component.literal("-" + displayValue + "% ");
+                    return desc.append(Component.translatable("description.cybernetics."+operation.id+"."+attribute.location().getPath())).withStyle(ChatFormatting.RED);
+
+                }
             }
         }
 

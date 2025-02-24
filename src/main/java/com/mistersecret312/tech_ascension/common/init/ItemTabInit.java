@@ -24,7 +24,6 @@ public class ItemTabInit
                     .title(Component.translatable("creativetab.main_tab"))
                     .displayItems((parameters, output) ->
                     {
-                        output.accept(QualityItem.create(ItemInit.ARM.get(), Quality.ICONIC));
                         output.accept(CyberneticItem.create(ItemInit.ARM.get(), ResourceKey.create(Cybernetics.REGISTRY_KEY, new ResourceLocation("tech_ascension:cool_arm")), Quality.ICONIC));
                     })
                     .build());

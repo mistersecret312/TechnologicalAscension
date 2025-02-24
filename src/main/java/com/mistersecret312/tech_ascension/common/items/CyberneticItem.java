@@ -10,21 +10,18 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.UUID;
 
 public class CyberneticItem extends QualityItem
 {
     public static final String CYBERNETICS = "cybernetics";
+    public static final String CYBER_UUID = "cyberUUID";
 
     public CyberneticItem(Properties pProperties)
     {
@@ -52,9 +49,7 @@ public class CyberneticItem extends QualityItem
         cyberneticsRegistry.entrySet();
         Cybernetics cybernetics = cyberneticsRegistry.get(this.getCybernetics(pStack));
         if(cybernetics != null)
-        {
-            cybernetics.getAbilities().forEach(ability -> pTooltipComponents.add(ability.getDescription(this.getQuality(pStack))));
-        }
+            cybernetics.getAbilities().forEach(ability -> pTooltipComponents.add(ability.getDescription(pStack)));
 
     }
 
@@ -80,5 +75,19 @@ public class CyberneticItem extends QualityItem
         }
 
         return null;
+    }
+
+    public UUID getUUID(ItemStack stack)
+    {
+        if(stack.getTag() != null)
+        {
+            if(!stack.getTag().contains(CYBER_UUID))
+                stack.getOrCreateTag().putUUID(CYBER_UUID, UUID.randomUUID());
+        }
+        else
+        {
+            stack.getOrCreateTag().putUUID(CYBER_UUID, UUID.randomUUID());
+        }
+        return stack.getTag().getUUID(CYBER_UUID);
     }
 }
