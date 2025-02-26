@@ -1,8 +1,10 @@
 package com.mistersecret312.tech_ascension;
 
 import com.mistersecret312.tech_ascension.common.datapack.Cybernetics;
+import com.mistersecret312.tech_ascension.common.init.BlockInit;
 import com.mistersecret312.tech_ascension.common.init.ItemInit;
 import com.mistersecret312.tech_ascension.common.init.ItemTabInit;
+import com.mistersecret312.tech_ascension.common.init.MenuInit;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -30,6 +32,8 @@ public class TechAscensionMod
 
 
         ItemInit.register(modEventBus);
+        BlockInit.register(modEventBus);
+        MenuInit.register(modEventBus);
         ItemTabInit.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);

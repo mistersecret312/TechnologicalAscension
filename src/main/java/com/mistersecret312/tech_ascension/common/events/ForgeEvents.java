@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -20,6 +21,14 @@ public class ForgeEvents
     {
         if(event.getObject() instanceof Player)
             event.addCapability(new ResourceLocation(TechAscensionMod.MODID, "cybernetics"), new GenericProvider<>(CapabilityInit.CYBERNETICS, new CyberneticCapability()));
+    }
+
+    public static void livingTick(LivingEvent.LivingTickEvent event)
+    {
+        event.getEntity().getCapability(CapabilityInit.CYBERNETICS).ifPresent(cap ->
+        {
+            cap.tick(event.getEntity().level(), event.getEntity());
+        });
     }
 
 }

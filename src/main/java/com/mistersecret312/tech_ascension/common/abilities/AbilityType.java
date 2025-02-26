@@ -1,9 +1,7 @@
 package com.mistersecret312.tech_ascension.common.abilities;
 
-import com.mistersecret312.tech_ascension.common.util.Quality;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 

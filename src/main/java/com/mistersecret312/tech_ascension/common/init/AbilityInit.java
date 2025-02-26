@@ -4,17 +4,13 @@ import com.mistersecret312.tech_ascension.TechAscensionMod;
 import com.mistersecret312.tech_ascension.common.abilities.AbilityType;
 import com.mistersecret312.tech_ascension.common.abilities.AttributeAbility;
 import com.mistersecret312.tech_ascension.common.util.RegistryDispatcher;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegistryObject;
 
-import javax.management.Attribute;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = TechAscensionMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
