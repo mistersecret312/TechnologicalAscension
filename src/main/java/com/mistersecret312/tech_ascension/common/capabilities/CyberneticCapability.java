@@ -2,8 +2,9 @@ package com.mistersecret312.tech_ascension.common.capabilities;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.EnderChestBlock;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -11,13 +12,18 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
 {
     public static final String CYBERNETICS = "cybernetics";
 
-    public ItemStackHandler handler = new ItemStackHandler(27);
+    private ItemStackHandler handler = new ItemStackHandler(55);
 
     public void tick(Level level, LivingEntity living)
     {
         if(level.isClientSide() || level.getServer() == null)
             return;
 
+    }
+
+    public ItemStackHandler getHandler()
+    {
+        return handler;
     }
 
     @Override

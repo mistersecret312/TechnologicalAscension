@@ -8,6 +8,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +36,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
 
         player.getCapability(CapabilityInit.CYBERNETICS).ifPresent(cap ->
         {
-            this.addSlot(new SlotItemHandler(cap.handler, 0, 0, 0));
+            this.addSlot(new SlotItemHandler(cap.getHandler(), 0, 8, 18));
         });
     }
 
@@ -45,7 +46,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
         {
             for (int l = 0; l < 9; ++l)
             {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 90 + i * 18));
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 95 + i * 18));
             }
         }
     }
@@ -54,7 +55,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
     {
         for (int i = 0; i < 9; ++i)
         {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 148));
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 153));
         }
     }
 
@@ -74,7 +75,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 1;  // must match TileEntityInventoryBasic.NUMBER_OF_SLOTS
+    private static final int TE_INVENTORY_SLOT_COUNT = 54;  // must match TileEntityInventoryBasic.NUMBER_OF_SLOTS
 
     @Override
     public ItemStack quickMoveStack(Player player, int index)
@@ -121,6 +122,6 @@ public class RipperdocChairMenu extends AbstractContainerMenu
     @Override
     public boolean stillValid(Player player)
     {
-        return true;
+        return stillValid(ContainerLevelAccess.create(level, pos), player, BlockInit.RIPPERDOC_CHAIR.get());
     }
 }
