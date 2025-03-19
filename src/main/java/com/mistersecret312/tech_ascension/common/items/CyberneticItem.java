@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -89,5 +90,23 @@ public class CyberneticItem extends QualityItem
             stack.getOrCreateTag().putUUID(CYBER_UUID, UUID.randomUUID());
         }
         return stack.getTag().getUUID(CYBER_UUID);
+    }
+
+    public static ResourceKey<Cybernetics> getCyberneticTag(CompoundTag tag)
+    {
+        String ID = "";
+        if(tag != null && tag.contains(CYBERNETICS))
+        {
+            ID = tag.getString(CYBERNETICS);
+        }
+        if(!ID.isBlank())
+        {
+            ResourceLocation id = ResourceLocation.tryParse(ID);
+            if(id == null)
+                id = new ResourceLocation(TechAscensionMod.MODID, "empty");
+            return ResourceKey.create(Cybernetics.REGISTRY_KEY, id);
+        }
+
+        return null;
     }
 }

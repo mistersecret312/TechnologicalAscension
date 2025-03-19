@@ -1,5 +1,6 @@
 package com.mistersecret312.tech_ascension.common.abilities;
 
+import com.mistersecret312.tech_ascension.common.capabilities.CyberneticCapability;
 import com.mistersecret312.tech_ascension.common.init.AbilityInit;
 import com.mistersecret312.tech_ascension.common.items.CyberneticItem;
 import com.mistersecret312.tech_ascension.common.util.Quality;
@@ -72,11 +73,8 @@ public class AttributeAbility implements AbilityType
     }
 
     @Override
-    public void onAdded(LivingEntity entity, ItemStack stack)
+    public void onAdded(LivingEntity entity, CyberneticCapability.CyberneticData data)
     {
-        Quality quality = ((CyberneticItem) stack.getItem()).getQuality(stack);
-        UUID uuid = ((CyberneticItem) stack.getItem()).getUUID(stack);
-
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         Double value = null;
 
@@ -84,12 +82,12 @@ public class AttributeAbility implements AbilityType
             value = values.left().get();
 
         if(this.values.right().isPresent())
-            value = values.right().get().get(quality.ordinal());
+            value = values.right().get().get(data.getQuality().ordinal());
 
 
         if(attributeTarget != null && value != null)
         {
-            AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), value, operation.toModifier());
+            AttributeModifier modifier = new AttributeModifier(data.getUUID(), data.getUUID().toString(), value, operation.toModifier());
             AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
 
             if(instance != null)
@@ -99,15 +97,14 @@ public class AttributeAbility implements AbilityType
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, ItemStack stack)
+    public void onRemoved(LivingEntity entity, CyberneticCapability.CyberneticData data)
     {
-        UUID uuid = ((CyberneticItem) stack.getItem()).getUUID(stack);
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         if(attributeTarget != null)
         {
             AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
             if(instance != null)
-                instance.removePermanentModifier(uuid);
+                instance.removePermanentModifier(data.getUUID());
         }
     }
 

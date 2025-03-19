@@ -1,16 +1,15 @@
 package com.mistersecret312.tech_ascension.common.menu;
 
+import com.mistersecret312.tech_ascension.client.screens.RipperdocChairScreen;
 import com.mistersecret312.tech_ascension.common.init.BlockInit;
 import com.mistersecret312.tech_ascension.common.init.CapabilityInit;
 import com.mistersecret312.tech_ascension.common.init.MenuInit;
+import com.mistersecret312.tech_ascension.common.menu.slot.CyberneticSlotItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.SlotItemHandler;
@@ -36,7 +35,15 @@ public class RipperdocChairMenu extends AbstractContainerMenu
 
         player.getCapability(CapabilityInit.CYBERNETICS).ifPresent(cap ->
         {
-            this.addSlot(new SlotItemHandler(cap.getHandler(), 0, 8, 18));
+            int id = 0;
+            for (int j = 0; j < 6; j++)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    this.addSlot(new CyberneticSlotItemHandler(cap.getHandler(), id, 8+(i*18), 18 + j * 18));
+                    id++;
+                }
+            }
         });
     }
 
@@ -46,7 +53,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
         {
             for (int l = 0; l < 9; ++l)
             {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 95 + i * 18));
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 140 + i * 18));
             }
         }
     }
@@ -55,7 +62,7 @@ public class RipperdocChairMenu extends AbstractContainerMenu
     {
         for (int i = 0; i < 9; ++i)
         {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 153));
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 198));
         }
     }
 
@@ -123,5 +130,13 @@ public class RipperdocChairMenu extends AbstractContainerMenu
     public boolean stillValid(Player player)
     {
         return stillValid(ContainerLevelAccess.create(level, pos), player, BlockInit.RIPPERDOC_CHAIR.get());
+    }
+
+    @Override
+    public void removed(Player player)
+    {
+        if(!player.level().isClientSide() && this instanceof RipperdocChairMenu)
+            player.getCapability(CapabilityInit.CYBERNETICS).ifPresent(cap -> cap.handleCybernetics(player));
+        super.removed(player);
     }
 }

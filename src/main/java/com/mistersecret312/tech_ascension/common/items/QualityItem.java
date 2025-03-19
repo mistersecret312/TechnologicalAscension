@@ -1,6 +1,7 @@
 package com.mistersecret312.tech_ascension.common.items;
 
 import com.mistersecret312.tech_ascension.common.util.Quality;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -49,5 +50,17 @@ public class QualityItem extends Item
     public void setQuality(ItemStack stack, Quality quality)
     {
         stack.getOrCreateTag().putString(QUALITY, quality.toString());
+    }
+
+    public static Quality getQualityTag(CompoundTag tag)
+    {
+        if(tag != null && tag.contains(QUALITY))
+            try
+            {
+                return Quality.valueOf(tag.getString(QUALITY));
+            } catch (IllegalArgumentException e) {
+                return Quality.COMMON;
+            }
+        else return Quality.COMMON;
     }
 }
