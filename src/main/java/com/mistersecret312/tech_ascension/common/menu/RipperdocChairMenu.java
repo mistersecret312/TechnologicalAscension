@@ -132,11 +132,13 @@ public class RipperdocChairMenu extends AbstractContainerMenu
         return stillValid(ContainerLevelAccess.create(level, pos), player, BlockInit.RIPPERDOC_CHAIR.get());
     }
 
+
+
     @Override
     public void removed(Player player)
     {
+        super.removed(player);
         if(!player.level().isClientSide() && this instanceof RipperdocChairMenu)
             player.getCapability(CapabilityInit.CYBERNETICS).ifPresent(cap -> cap.handleCybernetics(player));
-        super.removed(player);
     }
 }

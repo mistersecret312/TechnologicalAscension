@@ -54,20 +54,14 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
 
 
                 Cybernetics cybernetics = player.level().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(item.getCybernetics(stack));
-                if(cybernetics != null && !appliedCybernetics.contains(data))
+                if(cybernetics != null &&
+                        appliedCybernetics.stream().noneMatch(dataKey -> dataKey.uuid.equals(uuid)))
                 {
                     cybernetics.getAbilities().forEach(ability -> ability.onAdded(player, data));
                     appliedCybernetics.add(data);
                 }
 
             }
-        }
-
-        List<ItemStack> stacks = new ArrayList<>();
-        for (int i = 0; i < handler.getSlots(); i++)
-        {
-            if(handler.getStackInSlot(i).getItem() instanceof CyberneticItem)
-                stacks.add(handler.getStackInSlot(i));
         }
     }
 
@@ -82,17 +76,20 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
                 {
                     UUID itemUUID = item.getUUID(stack);
                     if(data.getUUID().equals(itemUUID))
+                    {
                         hasMatch = true;
+                        break;
+                    }
                 }
             }
 
             if(!hasMatch)
             {
+                appliedCybernetics.remove(data);
                 Cybernetics cyber = player.level().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(data.key);
                 if(cyber != null)
                 {
                     cyber.getAbilities().forEach(ability -> ability.onRemoved(player, data));
-                    appliedCybernetics.remove(data);
                 }
             }
 
