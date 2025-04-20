@@ -6,12 +6,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-public interface AbilityType
+public interface AbilityType<T extends CyberneticCapability.CyberneticData>
 {
     Codec<? extends AbilityType> getType();
 
-    void onAdded(LivingEntity entity, CyberneticCapability.CyberneticData data);
-    void onRemoved(LivingEntity entity, CyberneticCapability.CyberneticData data);
+    void onAdded(LivingEntity entity, T data);
+    void onRemoved(LivingEntity entity, T data);
 
     Component getDescription(ItemStack stack);
 }

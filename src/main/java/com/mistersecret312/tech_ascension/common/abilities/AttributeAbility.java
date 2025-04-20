@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AttributeAbility implements AbilityType
+public class AttributeAbility implements AbilityType<CyberneticCapability.CyberneticData>
 {
     public static final Codec<AttributeAbility> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceKey.codec(Registries.ATTRIBUTE).fieldOf("attribute").forGetter(AttributeAbility::getAttribute),
@@ -87,6 +87,9 @@ public class AttributeAbility implements AbilityType
 
         if(attributeTarget != null && value != null)
         {
+            if(!this.operation.equals(Operation.ADDITION))
+                value -= 1;
+
             AttributeModifier modifier = new AttributeModifier(data.getUUID(), data.getUUID().toString(), value, operation.toModifier());
             AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
 

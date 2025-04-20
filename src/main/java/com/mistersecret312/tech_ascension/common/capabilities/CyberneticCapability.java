@@ -1,5 +1,6 @@
 package com.mistersecret312.tech_ascension.common.capabilities;
 
+import com.mistersecret312.tech_ascension.common.abilities.ITickAbility;
 import com.mistersecret312.tech_ascension.common.datapack.Cybernetics;
 import com.mistersecret312.tech_ascension.common.items.CyberneticItem;
 import com.mistersecret312.tech_ascension.common.items.QualityItem;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class CyberneticCapability implements INBTSerializable<CompoundTag>
@@ -30,6 +32,15 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
     {
         if(level.isClientSide() || level.getServer() == null)
             return;
+
+        appliedCybernetics.forEach(data -> {
+            Cybernetics cyber = level.getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(data.getKey());
+            if(cyber != null)
+            {
+                cyber.getAbilities().stream().filter(ability -> ability instanceof ITickAbility)
+                        .forEach(ability -> ((ITickAbility) ability).tick(living, data));
+            }
+        });
 
     }
 
@@ -50,8 +61,8 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
                 UUID uuid = item.getUUID(stack);
                 ResourceKey<Cybernetics> key = item.getCybernetics(stack);
                 Quality quality = item.getQuality(stack);
-                CyberneticData data = new CyberneticData(uuid, key, quality);
-
+                CompoundTag extraData = item.getCyberneticData(stack);
+                CyberneticData data = new CyberneticData(uuid, key, quality, extraData);
 
                 Cybernetics cybernetics = player.level().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(item.getCybernetics(stack));
                 if(cybernetics != null &&
@@ -67,6 +78,7 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
 
     private void handlePresentCybernetics(Player player)
     {
+        Set<CyberneticData> removed = new HashSet<>();
         appliedCybernetics.forEach(data -> {
             boolean hasMatch = false;
             for (int i = 0; i < handler.getSlots(); i++)
@@ -84,15 +96,17 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
             }
 
             if(!hasMatch)
-            {
-                appliedCybernetics.remove(data);
-                Cybernetics cyber = player.level().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(data.key);
-                if(cyber != null)
-                {
-                    cyber.getAbilities().forEach(ability -> ability.onRemoved(player, data));
-                }
-            }
+                removed.add(data);
 
+        });
+
+        removed.forEach(data -> {
+            appliedCybernetics.remove(data);
+            Cybernetics cyber = player.level().getServer().registryAccess().registryOrThrow(Cybernetics.REGISTRY_KEY).get(data.key);
+            if(cyber != null)
+            {
+                cyber.getAbilities().forEach(ability -> ability.onRemoved(player, data));
+            }
         });
     }
 
@@ -117,22 +131,33 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
         handler.deserializeNBT(nbt.getCompound(CYBERNETICSTORAGE));
         ListTag cybernetics = nbt.getList(CYBERNETICS, ListTag.TAG_COMPOUND);
         appliedCybernetics.clear();
-        cybernetics.forEach(tag -> appliedCybernetics.add(CyberneticData.deserializeNBT(nbt)));
+        cybernetics.forEach(tag ->
+        {
+            CyberneticData data = new CyberneticData();
+            CyberneticData newData = data.deserializeNBT(((CompoundTag) tag));
+            appliedCybernetics.add(newData);
+        });
     }
 
     public static class CyberneticData
     {
         private static final String UUID = "uuid";
+        private static final String DATA = "data";
 
         private UUID uuid;
         private ResourceKey<Cybernetics> key;
         private Quality quality;
+        private CompoundTag extraData;
 
-        public CyberneticData(UUID uuid, ResourceKey<Cybernetics> key, Quality quality)
+        public CyberneticData()
+        {}
+
+        public CyberneticData(UUID uuid, ResourceKey<Cybernetics> key, Quality quality, CompoundTag data)
         {
             this.uuid = uuid;
             this.key = key;
             this.quality = quality;
+            this.extraData = data;
         }
 
         public UUID getUUID()
@@ -150,6 +175,11 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
             return quality;
         }
 
+        public CompoundTag getExtraData()
+        {
+            return extraData;
+        }
+
         public CompoundTag serializeNBT()
         {
             CompoundTag tag = new CompoundTag();
@@ -157,17 +187,25 @@ public class CyberneticCapability implements INBTSerializable<CompoundTag>
             tag.putUUID(UUID, this.getUUID());
             tag.putString(CyberneticItem.CYBERNETICS, this.getKey().location().toString());
             tag.putString(QualityItem.QUALITY, this.getQuality().toString());
+            tag.put(DATA, this.getExtraData());
 
             return tag;
         }
 
-        public static CyberneticData deserializeNBT(CompoundTag tag)
+        public CyberneticData deserializeNBT(CompoundTag tag)
         {
             UUID uuid = tag.getUUID(UUID);
             ResourceKey<Cybernetics> key = CyberneticItem.getCyberneticTag(tag);
             Quality quality = QualityItem.getQualityTag(tag);
+            CompoundTag extraData = tag.getCompound(DATA);
+            loadData(tag);
 
-            return new CyberneticData(uuid, key, quality);
+            return new CyberneticData(uuid, key, quality, extraData);
+        }
+
+        public void loadData(CompoundTag tag)
+        {
+
         }
     }
 }

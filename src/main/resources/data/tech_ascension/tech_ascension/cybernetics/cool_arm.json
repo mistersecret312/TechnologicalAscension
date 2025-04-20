@@ -4,15 +4,15 @@
     {
       "type": "tech_ascension:attribute",
       "attribute": "minecraft:generic.attack_damage",
-      "operation": "multiply_base",
+      "operation": "addition",
       "quality_values":
       [
-        1.05,
-        1.1,
-        1.15,
-        1.2,
-        1.25,
-        1.5
+        1,
+        2,
+        4,
+        8,
+        10,
+        15
       ]
     }
   ]

@@ -4,6 +4,8 @@
   "item.tech_ascension.cyber_arm": "Cybernetic Arm",
 
   "description.cybernetics.multiply_base.generic.attack_damage": "Attack Damage",
+  "description.cybernetics.multiply_total.generic.attack_damage": "Attack Damage",
+  "description.cybernetics.addition.generic.attack_damage": "Attack Damage",
 
   "quality.iconic": "❖ Iconic",
   "quality.legendary": "⬢ Legendary",

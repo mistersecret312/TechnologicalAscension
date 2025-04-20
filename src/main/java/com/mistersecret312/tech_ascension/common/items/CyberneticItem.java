@@ -1,6 +1,7 @@
 package com.mistersecret312.tech_ascension.common.items;
 
 import com.mistersecret312.tech_ascension.TechAscensionMod;
+import com.mistersecret312.tech_ascension.common.capabilities.CyberneticCapability;
 import com.mistersecret312.tech_ascension.common.datapack.Cybernetics;
 import com.mistersecret312.tech_ascension.common.util.Quality;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class CyberneticItem extends QualityItem
 {
     public static final String CYBERNETICS = "cybernetics";
+    public static final String CYBERNETIC_DATA = "cyber_data";
     public static final String CYBER_UUID = "cyberUUID";
 
     public CyberneticItem(Properties pProperties)
@@ -50,13 +52,32 @@ public class CyberneticItem extends QualityItem
         cyberneticsRegistry.entrySet();
         Cybernetics cybernetics = cyberneticsRegistry.get(this.getCybernetics(pStack));
         if(cybernetics != null)
-            cybernetics.getAbilities().forEach(ability -> pTooltipComponents.add(ability.getDescription(pStack)));
-
+        {
+            cybernetics.getAbilities().forEach(ability -> {
+                Component component = ability.getDescription(pStack);
+                if(component != null)
+                    pTooltipComponents.add(component);
+            });
+        }
     }
 
     public void setCybernetics(ItemStack stack, ResourceKey<Cybernetics> cybernetics)
     {
         stack.getOrCreateTag().putString(CYBERNETICS, cybernetics.location().toString());
+    }
+
+    public CompoundTag getCyberneticData(ItemStack stack)
+    {
+        if(stack.getTag() != null && stack.getTag().contains(CYBERNETIC_DATA))
+        {
+            return stack.getTag().getCompound(CYBERNETIC_DATA);
+        }
+        else return new CompoundTag();
+    }
+
+    public void setCyberneticData(ItemStack stack, CyberneticCapability.CyberneticData data)
+    {
+        stack.getOrCreateTag().put(CYBERNETIC_DATA, data.getExtraData());
     }
 
     @Nullable
