@@ -1,9 +1,9 @@
 package com.mistersecret312.tech_ascension.common.items;
 
 import com.mistersecret312.tech_ascension.TechAscensionMod;
-import com.mistersecret312.tech_ascension.common.capabilities.CyberneticCapability;
+import com.mistersecret312.tech_ascension.common.abilities.data.CyberneticData;
 import com.mistersecret312.tech_ascension.common.datapack.Cybernetics;
-import com.mistersecret312.tech_ascension.common.util.Quality;
+import com.mistersecret312.tech_ascension.common.init.CyberneticDataInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Registry;
@@ -31,10 +31,10 @@ public class CyberneticItem extends QualityItem
         super(pProperties);
     }
 
-    public static ItemStack create(CyberneticItem item, ResourceKey<Cybernetics> cybernetics, Quality quality)
+    public static ItemStack create(CyberneticItem item, CyberneticData data)
     {
-        ItemStack stack = QualityItem.create(item, quality);
-        item.setCybernetics(stack, cybernetics);
+        ItemStack stack = new ItemStack(item);
+        item.setCyberneticData(stack, data);
 
         return stack;
     }
@@ -61,23 +61,28 @@ public class CyberneticItem extends QualityItem
         }
     }
 
-    public void setCybernetics(ItemStack stack, ResourceKey<Cybernetics> cybernetics)
+    public CyberneticData getCyberneticData(ItemStack stack)
     {
-        stack.getOrCreateTag().putString(CYBERNETICS, cybernetics.location().toString());
-    }
-
-    public CompoundTag getCyberneticData(ItemStack stack)
-    {
-        if(stack.getTag() != null && stack.getTag().contains(CYBERNETIC_DATA))
+        if(stack.getTag() != null && stack.getTag().contains(CYBERNETIC_DATA) && stack.getTag().contains("cybernetic_data_type"))
         {
-            return stack.getTag().getCompound(CYBERNETIC_DATA);
+            ResourceLocation type = ResourceLocation.tryParse(stack.getTag().getString("cybernetic_data_type"));
+            if(type == null)
+                return null;
+
+            CyberneticData data = CyberneticDataInit.constructObject(type);
+            if(data == null)
+                return null;
+
+            data.deserializeNBT(stack.getTag().getCompound(CYBERNETIC_DATA));
+            return data;
         }
-        else return new CompoundTag();
+        else return null;
     }
 
-    public void setCyberneticData(ItemStack stack, CyberneticCapability.CyberneticData data)
+    public void setCyberneticData(ItemStack stack, CyberneticData data)
     {
-        stack.getOrCreateTag().put(CYBERNETIC_DATA, data.getExtraData());
+        stack.getOrCreateTag().putString("cybernetic_data_type", CyberneticDataInit.getResourceLocation(data).toString());
+        stack.getOrCreateTag().put(CYBERNETIC_DATA, data.serializeNBT());
     }
 
     @Nullable

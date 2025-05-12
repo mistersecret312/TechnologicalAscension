@@ -1,11 +1,12 @@
 package com.mistersecret312.tech_ascension;
 
+import com.mistersecret312.tech_ascension.common.abilities.data.AttributeCyberneticData;
+import com.mistersecret312.tech_ascension.common.abilities.data.BaseCyberneticData;
+import com.mistersecret312.tech_ascension.common.abilities.data.CyberneticData;
 import com.mistersecret312.tech_ascension.common.datapack.Cybernetics;
-import com.mistersecret312.tech_ascension.common.init.BlockInit;
-import com.mistersecret312.tech_ascension.common.init.ItemInit;
-import com.mistersecret312.tech_ascension.common.init.ItemTabInit;
-import com.mistersecret312.tech_ascension.common.init.MenuInit;
+import com.mistersecret312.tech_ascension.common.init.*;
 import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -50,7 +51,11 @@ public class TechAscensionMod
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-
+        event.enqueueWork(() ->
+        {
+            CyberneticDataInit.register(new ResourceLocation(MODID, "empty"), BaseCyberneticData.class, BaseCyberneticData::new);
+            CyberneticDataInit.register(new ResourceLocation(MODID, "attribute"), AttributeCyberneticData.class, AttributeCyberneticData::new);
+        });
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

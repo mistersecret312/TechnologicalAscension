@@ -1,5 +1,8 @@
 package com.mistersecret312.tech_ascension.common.abilities;
 
+import com.mistersecret312.tech_ascension.common.abilities.data.AttributeCyberneticData;
+import com.mistersecret312.tech_ascension.common.abilities.data.BaseCyberneticData;
+import com.mistersecret312.tech_ascension.common.abilities.data.CyberneticData;
 import com.mistersecret312.tech_ascension.common.capabilities.CyberneticCapability;
 import com.mistersecret312.tech_ascension.common.init.AbilityInit;
 import com.mistersecret312.tech_ascension.common.items.CyberneticItem;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AttributeAbility implements AbilityType<CyberneticCapability.CyberneticData>
+public class AttributeAbility implements AbilityType<AttributeCyberneticData>
 {
     public static final Codec<AttributeAbility> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceKey.codec(Registries.ATTRIBUTE).fieldOf("attribute").forGetter(AttributeAbility::getAttribute),
@@ -42,6 +45,13 @@ public class AttributeAbility implements AbilityType<CyberneticCapability.Cybern
         this.attribute = attribute;
         this.values = values;
         this.operation = operation;
+    }
+
+    public AttributeAbility(AttributeCyberneticData data)
+    {
+        this.attribute = data.attribute;
+        this.values = data.values;
+        this.operation = data.operation;
     }
 
     public AttributeAbility()
@@ -67,13 +77,13 @@ public class AttributeAbility implements AbilityType<CyberneticCapability.Cybern
     }
 
     @Override
-    public Codec<? extends AbilityType> getType()
+    public Codec<? extends AbilityType<AttributeCyberneticData>> getType()
     {
         return AbilityInit.ATTRIBUTE.get();
     }
 
     @Override
-    public void onAdded(LivingEntity entity, CyberneticCapability.CyberneticData data)
+    public void onAdded(LivingEntity entity, AttributeCyberneticData data)
     {
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         Double value = null;
@@ -100,7 +110,7 @@ public class AttributeAbility implements AbilityType<CyberneticCapability.Cybern
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, CyberneticCapability.CyberneticData data)
+    public void onRemoved(LivingEntity entity, AttributeCyberneticData data)
     {
         Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
         if(attributeTarget != null)
