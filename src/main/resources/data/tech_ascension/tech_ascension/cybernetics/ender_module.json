@@ -1,0 +1,23 @@
+{
+  "abilities":
+  [
+    {
+      "type": "tech_ascension:ender",
+      "quality_ranges":
+      [
+        5,
+        7,
+        10,
+        13,
+        15,
+        20
+      ]
+    },
+    {
+      "type": "tech_ascension:attribute",
+      "attribute": "minecraft:generic.max_health",
+      "operation": "addition",
+      "value": 2
+    }
+  ]
+}

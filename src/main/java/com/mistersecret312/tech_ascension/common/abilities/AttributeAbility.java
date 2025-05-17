@@ -1,9 +1,5 @@
 package com.mistersecret312.tech_ascension.common.abilities;
 
-import com.mistersecret312.tech_ascension.common.abilities.data.AttributeCyberneticData;
-import com.mistersecret312.tech_ascension.common.abilities.data.BaseCyberneticData;
-import com.mistersecret312.tech_ascension.common.abilities.data.CyberneticData;
-import com.mistersecret312.tech_ascension.common.capabilities.CyberneticCapability;
 import com.mistersecret312.tech_ascension.common.init.AbilityInit;
 import com.mistersecret312.tech_ascension.common.items.CyberneticItem;
 import com.mistersecret312.tech_ascension.common.util.Quality;
@@ -21,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -29,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class AttributeAbility implements AbilityType<AttributeCyberneticData>
+public class AttributeAbility implements AbilityType
 {
     public static final Codec<AttributeAbility> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceKey.codec(Registries.ATTRIBUTE).fieldOf("attribute").forGetter(AttributeAbility::getAttribute),
@@ -45,13 +42,6 @@ public class AttributeAbility implements AbilityType<AttributeCyberneticData>
         this.attribute = attribute;
         this.values = values;
         this.operation = operation;
-    }
-
-    public AttributeAbility(AttributeCyberneticData data)
-    {
-        this.attribute = data.attribute;
-        this.values = data.values;
-        this.operation = data.operation;
     }
 
     public AttributeAbility()
@@ -77,47 +67,53 @@ public class AttributeAbility implements AbilityType<AttributeCyberneticData>
     }
 
     @Override
-    public Codec<? extends AbilityType<AttributeCyberneticData>> getType()
+    public Codec<? extends AbilityType> getType()
     {
         return AbilityInit.ATTRIBUTE.get();
     }
 
     @Override
-    public void onAdded(LivingEntity entity, AttributeCyberneticData data)
+    public void onAdded(LivingEntity entity, ItemStack stack)
     {
-        Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
-        Double value = null;
-
-        if(this.values.left().isPresent())
-            value = values.left().get();
-
-        if(this.values.right().isPresent())
-            value = values.right().get().get(data.getQuality().ordinal());
-
-
-        if(attributeTarget != null && value != null)
+        if(stack.getItem() instanceof CyberneticItem item)
         {
-            if(!this.operation.equals(Operation.ADDITION))
-                value -= 1;
+            UUID uuid = item.getUUID(stack);
+            Quality quality = item.getQuality(stack);
 
-            AttributeModifier modifier = new AttributeModifier(data.getUUID(), data.getUUID().toString(), value, operation.toModifier());
-            AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
+            Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
+            Double value = null;
 
-            if(instance != null)
-                instance.addPermanentModifier(modifier);
+            if (this.values.left().isPresent()) value = values.left().get();
 
+            if (this.values.right().isPresent()) value = values.right().get().get(quality.ordinal());
+
+
+            if (attributeTarget != null && value != null)
+            {
+                if (!this.operation.equals(Operation.ADDITION)) value -= 1;
+
+                AttributeModifier modifier = new AttributeModifier(uuid, uuid.toString(), value, operation.toModifier());
+                AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
+
+                if (instance != null) instance.addPermanentModifier(modifier);
+
+            }
         }
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, AttributeCyberneticData data)
+    public void onRemoved(LivingEntity entity, ItemStack stack)
     {
-        Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
-        if(attributeTarget != null)
+        if(stack.getItem() instanceof CyberneticItem item)
         {
-            AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
-            if(instance != null)
-                instance.removePermanentModifier(data.getUUID());
+            UUID uuid = item.getUUID(stack);
+
+            Attribute attributeTarget = ForgeRegistries.ATTRIBUTES.getValue(this.attribute.location());
+            if (attributeTarget != null)
+            {
+                AttributeInstance instance = entity.getAttributes().getInstance(attributeTarget);
+                if (instance != null) instance.removePermanentModifier(uuid);
+            }
         }
     }
 

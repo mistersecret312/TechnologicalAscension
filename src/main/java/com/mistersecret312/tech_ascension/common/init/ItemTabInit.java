@@ -26,6 +26,7 @@ public class ItemTabInit
                     {
                         output.accept(BlockInit.RIPPERDOC_CHAIR.get());
                         output.accept(CyberneticItem.create(ItemInit.ARM.get(), ResourceKey.create(Cybernetics.REGISTRY_KEY, new ResourceLocation("tech_ascension:cool_arm")), Quality.ICONIC));
+                        output.accept(CyberneticItem.create(ItemInit.ENDER_MODULE.get(), ResourceKey.create(Cybernetics.REGISTRY_KEY, new ResourceLocation("tech_ascension:ender_module")), Quality.ICONIC));
                     })
                     .build());
 

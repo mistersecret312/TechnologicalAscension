@@ -2,10 +2,21 @@
   "creativetab.main_tab": "Technological Ascension",
 
   "item.tech_ascension.cyber_arm": "Cybernetic Arm",
+  "item.tech_ascension.ender_module": "Ender Module",
+
+  "key.category.tech_ascension": "Technological Ascension",
+  "tech_ascension.cybernetics.activate": "Activate Cybernetics",
+  "tech_ascension.cybernetics.next_ability": "Next Cybernetics",
 
   "description.cybernetics.multiply_base.generic.attack_damage": "Attack Damage",
   "description.cybernetics.multiply_total.generic.attack_damage": "Attack Damage",
   "description.cybernetics.addition.generic.attack_damage": "Attack Damage",
+
+  "description.cybernetics.multiply_base.generic.max_health": "Max Health",
+  "description.cybernetics.multiply_total.generic.max_health": "Max Health",
+  "description.cybernetics.addition.generic.max_health": "Max Health",
+
+  "ability.ender.description": "Allows you to teleport up to the distance of %1$s blocks, activated by pressing %2$s",
 
   "quality.iconic": "❖ Iconic",
   "quality.legendary": "⬢ Legendary",

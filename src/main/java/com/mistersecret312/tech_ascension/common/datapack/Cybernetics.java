@@ -2,7 +2,6 @@ package com.mistersecret312.tech_ascension.common.datapack;
 
 import com.mistersecret312.tech_ascension.TechAscensionMod;
 import com.mistersecret312.tech_ascension.common.abilities.AbilityType;
-import com.mistersecret312.tech_ascension.common.abilities.data.CyberneticData;
 import com.mistersecret312.tech_ascension.common.init.AbilityInit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -22,13 +21,13 @@ public class Cybernetics
             AbilityInit.DISPATCHER.dispatchedCodec().listOf().fieldOf("abilities").forGetter(Cybernetics::getAbilities)
     ).apply(instance, Cybernetics::new));
 
-    public List<AbilityType<? extends CyberneticData>> abilities;
-    public Cybernetics(List<AbilityType<? extends CyberneticData>> abilities)
+    public List<AbilityType> abilities;
+    public Cybernetics(List<AbilityType> abilities)
     {
         this.abilities = abilities;
     }
 
-    public List<AbilityType<? extends CyberneticData>> getAbilities()
+    public List<AbilityType> getAbilities()
     {
         return this.abilities;
     }

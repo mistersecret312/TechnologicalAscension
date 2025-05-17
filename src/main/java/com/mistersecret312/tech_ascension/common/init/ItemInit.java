@@ -15,6 +15,8 @@ public class ItemInit
 
     public static final RegistryObject<CyberneticItem> ARM = ITEMS.register("cyber_arm", () -> new CyberneticItem(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<CyberneticItem> ENDER_MODULE = ITEMS.register("ender_module", () -> new CyberneticItem(new Item.Properties().stacksTo(1)));
+
     public static void register(IEventBus bus)
     {
         ITEMS.register(bus);
